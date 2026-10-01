@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Urenregistratie</title>
+    
+    <!-- PWA & iOS specific -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b8590">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uren">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- HOME / URENREGISTRATIE -->
+        <section id="view-home" class="view active">
+            <header class="app-header header-home">
+                <div class="brand">
+                    <img src="ut-logo.png" alt="UT Logo" class="brand-logo-img">
+                </div>
+                <h1>Uren registreren</h1>
+                <div id="display-header-naam" class="header-medewerker-naam"></div>
+            </header>
+            <main>
+                <form id="uren-form">
+                    <div class="card summary-card">
+                        <span class="summary-label">Gewerkte tijd</span>
+                        <strong id="display-tijd">0 uur 0 min</strong>
+                        <span class="summary-hint">Automatisch berekend, exclusief pauze</span>
+                    </div>
+
+                    <h2 class="section-title">Werktijd</h2>
+                    <div class="card">
+                        <div class="input-group">
+                            <label>Datum</label>
+                            <input type="date" id="f-datum" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Begintijd</label>
+                            <input type="time" id="f-begintijd" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Eindtijd</label>
+                            <input type="time" id="f-eindtijd" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Pauze</label>
+                            <select id="f-pauze">
+                                <option value="0">Geen</option>
+                                <option value="15">15 minuten</option>
+                                <option value="30" selected>30 minuten</option>
+                                <option value="45">45 minuten</option>
+                                <option value="60">60 minuten (1 uur)</option>
+                                <option value="anders">Anders...</option>
+                            </select>
+                        </div>
+                        <div class="input-group hidden" id="f-pauze-custom-group">
+                            <label>Pauze (minuten)</label>
+                            <input type="number" id="f-pauze-custom" min="0">
+                        </div>
+                    </div>
+                    
+                    <h2 class="section-title">Reiskosten</h2>
+                    <div class="card">
+                        <div class="input-group">
+                            <label>Reiskosten</label>
+                            <select id="f-reis-type">
+                                <option value="geen">Geen</option>
+                                <option value="standaard">Standaard KM</option>
+                                <option value="anders">Anders...</option>
+                            </select>
+                        </div>
+                        <div class="input-group hidden" id="f-reis-custom-group">
+                            <label>Aantal KM</label>
+                            <input type="number" id="f-reis-custom" min="0" step="0.1">
+                        </div>
+                        <div class="reiskosten-display">
+                            Reiskostenvergoeding: <strong id="display-geld">€0,00</strong>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">Toelichting</h2>
+                    <div class="card">
+                        <div class="input-group">
+                            <label>Toelichting / specificatie</label>
+                            <textarea id="f-toelichting" rows="4" placeholder="3 uur Klant A&#10;5 uur Klant B"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Waarschuwing bij dubbele invoer op dezelfde dag -->
+                    <div id="duplicate-warning" class="warning-card hidden">
+                        <div class="warning-title">⚠️ Let op: Eerdere registratie gevonden</div>
+                        <div id="duplicate-details"></div>
+                        <p class="warning-sub">Pas de datum of naam aan, of klik nogmaals op de knop hieronder om toch te verzenden.</p>
+                    </div>
+
+                    <div id="error-message" class="error-msg hidden"></div>
+                    
+                    <button type="submit" id="btn-submit" class="btn-primary">Uren registreren</button>
+                    <div id="status-message" class="status-msg hidden"></div>
+                </form>
+            </main>
+        </section>
+
+        <!-- HISTORIE -->
+        <section id="view-historie" class="view">
+            <header class="app-header">
+                <div class="brand">
+                    <img src="ut-logo.png" alt="UT Logo" class="brand-logo-img">
+                </div>
+                <h1>Historie</h1>
+                <p class="subtitle">Je laatste registraties op dit apparaat</p>
+            </header>
+            <main id="historie-lijst">
+                <!-- Wordt gevuld met JS -->
+            </main>
+        </section>
+
+        <!-- INSTELLINGEN -->
+        <section id="view-instellingen" class="view">
+            <header class="app-header">
+                <div class="brand">
+                    <img src="ut-logo.png" alt="UT Logo" class="brand-logo-img">
+                </div>
+                <h1>Instellingen</h1>
+                <p class="subtitle">Je persoonlijke standaardwaarden</p>
+            </header>
+            <main>
+                <form id="instellingen-form">
+                    <h2 class="section-title">Werkdag</h2>
+                    <div class="card">
+                        <div class="input-group">
+                            <label>Naam medewerker</label>
+                            <input type="text" id="s-naam" required placeholder="Bijv. Fay">
+                        </div>
+                        <div class="input-group">
+                            <label>Standaard begintijd</label>
+                            <input type="time" id="s-begin" value="08:30">
+                        </div>
+                        <div class="input-group">
+                            <label>Standaard eindtijd</label>
+                            <input type="time" id="s-eind" value="17:00">
+                        </div>
+                    </div>
+                    <h2 class="section-title">Reiskosten</h2>
+                    <div class="card">
+                        <div class="input-group">
+                            <label>Standaard aantal km</label>
+                            <input type="number" id="s-km" value="10" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vergoeding per km (€)</label>
+                            <input type="number" id="s-vergoeding" value="0.23" step="0.01">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Opslaan</button>
+                    <div id="save-status" class="status-msg hidden">Opgeslagen!</div>
+                </form>
+            </main>
+        </section>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-target="view-home">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2.5" /><path d="M9 2h6" /></svg>
+            <span>Registreren</span>
+        </button>
+        <button class="nav-item" data-target="view-historie">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13" /><path d="M8 12h13" /><path d="M8 18h13" /><path d="M3 6h.01" /><path d="M3 12h.01" /><path d="M3 18h.01" /></svg>
+            <span>Historie</span>
+        </button>
+        <button class="nav-item" data-target="view-instellingen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7" /><path d="M4 10V3" /><path d="M12 21v-9" /><path d="M12 8V3" /><path d="M20 21v-5" /><path d="M20 12V3" /><path d="M1 14h6" /><path d="M9 8h6" /><path d="M17 16h6" /></svg>
+            <span>Instellingen</span>
+        </button>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>
